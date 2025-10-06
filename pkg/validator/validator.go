@@ -16,4 +16,5 @@ type ValidatorType string
 const (
 	ValidatorTypeAzure     ValidatorType = "azure"
 	ValidatorTypeSimulator ValidatorType = "simulator"
+	ValidatorTypeTDX       ValidatorType = "tdx"
 )

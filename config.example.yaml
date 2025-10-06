@@ -10,12 +10,12 @@ transport:
 
 # Issuer configuration
 issuer:
-  type: simulator  # Options: azure, simulator
+  type: simulator  # Options: azure, simulator, tdx
   # No config needed for azure or simulator
 
 # Validator configuration  
 validator:
-  type: simulator  # Options: azure, simulator
+  type: simulator  # Options: azure, simulator, tdx
   # config:  # Only needed for azure type
   #   measurements:
   #     0: "0x1234..."

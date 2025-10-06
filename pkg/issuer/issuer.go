@@ -17,6 +17,7 @@ type IssuerType string
 const (
 	IssuerTypeAzure     IssuerType = "azure"
 	IssuerTypeSimulator IssuerType = "simulator"
+	IssuerTypeTDX       IssuerType = "tdx"
 )
 
 const (
