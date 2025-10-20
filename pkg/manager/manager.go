@@ -8,12 +8,14 @@ import (
 	"github.com/Hyodar/tdxs/pkg/issuer"
 	azureissuer "github.com/Hyodar/tdxs/pkg/issuer/azure"
 	simulatorissuer "github.com/Hyodar/tdxs/pkg/issuer/simulator"
+	tdxissuer "github.com/Hyodar/tdxs/pkg/issuer/tdx"
 	"github.com/Hyodar/tdxs/pkg/logger"
 	"github.com/Hyodar/tdxs/pkg/transport"
 	sockettransport "github.com/Hyodar/tdxs/pkg/transport/socket"
 	"github.com/Hyodar/tdxs/pkg/validator"
 	azurevalidator "github.com/Hyodar/tdxs/pkg/validator/azure"
 	simulatorvalidator "github.com/Hyodar/tdxs/pkg/validator/simulator"
+	tdxvalidator "github.com/Hyodar/tdxs/pkg/validator/tdx"
 	"gopkg.in/yaml.v3"
 )
 
@@ -116,7 +118,7 @@ func (i *IssuerConfig) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	i.Type = ic.Type
 
 	switch i.Type {
-	case issuer.IssuerTypeAzure, issuer.IssuerTypeSimulator:
+	case issuer.IssuerTypeAzure, issuer.IssuerTypeSimulator, issuer.IssuerTypeTDX:
 		if !isNilOrEmptyYAMLNode(ic.Config) {
 			return fmt.Errorf("issuer config is not supported for type: %s", i.Type)
 		}
@@ -147,6 +149,12 @@ func (v *ValidatorConfig) UnmarshalYAML(unmarshal func(interface{}) error) error
 	switch v.Type {
 	case validator.ValidatorTypeAzure:
 		var cfg azurevalidator.AzureValidatorConfig
+		if err := vc.Config.Decode(&cfg); err != nil {
+			return err
+		}
+		v.Config = cfg
+	case validator.ValidatorTypeTDX:
+		var cfg tdxvalidator.TDXValidatorConfig
 		if err := vc.Config.Decode(&cfg); err != nil {
 			return err
 		}
@@ -196,6 +204,8 @@ func createIssuer(cfg *IssuerConfig, logger logger.Logger) (issuer.Issuer, error
 	switch cfg.Type {
 	case issuer.IssuerTypeAzure:
 		return azureissuer.NewAzureIssuer(logger), nil
+	case issuer.IssuerTypeTDX:
+		return tdxissuer.NewTDXIssuer(logger), nil
 	case issuer.IssuerTypeSimulator:
 		return simulatorissuer.NewSimulatorIssuer(logger), nil
 	default:
@@ -211,6 +221,12 @@ func createValidator(cfg *ValidatorConfig, logger logger.Logger) (validator.Vali
 			return nil, fmt.Errorf("invalid validator config type: %T", cfg.Config)
 		}
 		return azurevalidator.NewAzureValidator(&innerCfg, logger), nil
+	case validator.ValidatorTypeTDX:
+		innerCfg, ok := cfg.Config.(tdxvalidator.TDXValidatorConfig)
+		if !ok {
+			return nil, fmt.Errorf("invalid validator config type: %T", cfg.Config)
+		}
+		return tdxvalidator.NewTDXValidator(&innerCfg, logger), nil
 	case validator.ValidatorTypeSimulator:
 		return simulatorvalidator.NewSimulatorValidator(logger), nil
 	default:
