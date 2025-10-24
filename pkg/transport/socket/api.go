@@ -107,7 +107,7 @@ func NewIssueResponseFromError(err error) *SocketTransportIssueResponse {
 
 func NewIssueResponseFromAPI(response *api.IssueResponse) *SocketTransportIssueResponse {
 	if response.Error != nil {
-		errStr := fmt.Sprintf("validator error: %v", response.Error)
+		errStr := fmt.Sprintf("issuer error: %v", response.Error)
 		return &SocketTransportIssueResponse{
 			Error: &errStr,
 		}
@@ -141,7 +141,7 @@ func NewMetadataResponseFromError(err error) *SocketTransportMetadataResponse {
 
 func NewMetadataResponseFromAPI(response *api.MetadataResponse) *SocketTransportMetadataResponse {
 	if response.Error != nil {
-		errStr := fmt.Sprintf("validator error: %v", response.Error)
+		errStr := fmt.Sprintf("metadata error: %v", response.Error)
 		return &SocketTransportMetadataResponse{
 			Error: &errStr,
 		}
