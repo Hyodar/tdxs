@@ -19,7 +19,7 @@ git clone https://github.com/Hyodar/tdxs.git
 cd tdxs
 make build
 make install
-``
+```
 
 Run the daemon:
 
